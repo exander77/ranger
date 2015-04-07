@@ -193,7 +193,7 @@ class FileSystemObject(FileManagerAware, SettingsAware):
             self._mimetype = ''
 
         self.video = self._mimetype.startswith('video')
-        self.image = self._mimetype.startswith('image')
+        self.image = self._mimetype.startswith('image') or (self.extension != None and self.extension.lower() == "ora")
         self.audio = self._mimetype.startswith('audio')
         self.media = self.video or self.image or self.audio
         self.document = self._mimetype.startswith('text') \

@@ -11,7 +11,9 @@ implementations, which are currently w3m and iTerm2.
 
 import base64
 import curses
+import datetime
 import fcntl
+import hashlib
 import imghdr
 import os
 import select
@@ -90,6 +92,32 @@ class W3MImageDisplayer(ImageDisplayer):
         start_x, start_y, max_height and max_width specify the drawing area.
         They are expressed in number of characters.
         """
+
+	if os.path.splitext(path)[1][1:].lower() == "ora":
+            now = datetime.datetime.now()
+            ago = now - datetime.timedelta(hours=1)
+            tmpFilename = "/tmp/" + hashlib.md5(path).hexdigest() + ".png"
+            if os.path.isfile(tmpFilename) and datetime.datetime.fromtimestamp(os.stat(tmpFilename).st_mtime) > ago:
+                pass
+            else:
+                nullFilename = "/dev/null"
+                nullFile = open(nullFilename, "w")
+                tmpFile = open(tmpFilename, "w")
+                process = Popen(['unzip', '-p', path, 'mergedimage.png'], stdout=tmpFile, stderr=nullFile)
+                process.wait()
+                tmpFile.close()
+                nullFile.close();
+                if process.returncode != 0:
+                    nullFile = open(nullFilename, "w")
+                    tmpFile = open(tmpFilename, "w")
+                    process = Popen(['unzip', '-p', path, 'Thumbnails/thumbnail.png'], stdout=tmpFile, stderr=nullFile)
+                    process.wait()
+                    tmpFile.close()
+                    nullFile.close();
+                    if process.returncode != 0:
+                        raise ImgDisplayUnsupportedException()
+            path = tmpFilename
+
         fontw, fonth = _get_font_dimensions()
         if fontw == 0 or fonth == 0:
             raise ImgDisplayUnsupportedException()

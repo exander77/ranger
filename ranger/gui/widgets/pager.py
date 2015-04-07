@@ -8,9 +8,11 @@ from ranger.core.loader import CommandLoader
 from ranger.gui import ansi
 from ranger.ext.direction import Direction
 from ranger.ext.img_display import ImgDisplayUnsupportedException
+from threading import Timer
 
 # TODO: Scrolling in embedded pager
 class Pager(Widget):
+    timer = None
     source = None
     source_is_stream = False
 
@@ -84,7 +86,7 @@ class Pager(Widget):
 
             self.need_redraw = False
 
-    def draw_image(self):
+    def draw_image_impl(self):
         if self.image and self.need_redraw_image:
             self.source = None
             self.need_redraw_image = False
@@ -97,6 +99,12 @@ class Pager(Widget):
                 self.fm.notify(e, bad=True)
             else:
                 self.image_drawn = True
+    
+    def draw_image(self):
+        if self.timer != None:
+            self.timer.cancel();
+        self.timer = Timer(0.5, self.draw_image_impl)
+        self.timer.start()
 
     def _draw_line(self, i, line):
         if self.markup is None:
