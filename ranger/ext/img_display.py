@@ -93,7 +93,7 @@ class W3MImageDisplayer(ImageDisplayer):
         They are expressed in number of characters.
         """
 
-	if os.path.splitext(path)[1][1:].lower() == "ora":
+        if os.path.splitext(path)[1][1:].lower() == "ora":
             now = datetime.datetime.now()
             ago = now - datetime.timedelta(hours=1)
             tmpFilename = "/tmp/" + hashlib.md5(path).hexdigest() + ".png"
