@@ -96,7 +96,7 @@ class W3MImageDisplayer(ImageDisplayer):
         if os.path.splitext(path)[1][1:].lower() == "ora":
             now = datetime.datetime.now()
             ago = now - datetime.timedelta(hours=1)
-            tmpFilename = "/tmp/" + hashlib.md5(path).hexdigest() + ".png"
+            tmpFilename = "/tmp/" + hashlib.md5(path.encode('utf-8')).hexdigest() + ".png"
             if os.path.isfile(tmpFilename) and datetime.datetime.fromtimestamp(os.stat(tmpFilename).st_mtime) > ago:
                 pass
             else:
